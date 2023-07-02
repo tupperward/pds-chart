@@ -37,14 +37,6 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:          
@@ -68,11 +60,12 @@ spec:
                 secretKeyRef:
                   key:  pds-plc-rotation-key
                   name: {{ .Release.Name }}-auth
-            - name: PDS_PLC_ROTATION_KEY_K256_PRIVATE_KEY_HEX
-              valueFrom:
-                secretKeyRef:
-                  key:  pds-plc-rotation-key
-                  name: {{ .Release.Name }}-auth
+          envFrom:
+            - configMapRef:
+                name: {{ include "pds.fullname" . }}
+          volumeMounts:
+            - name: {{ include "pds.fullname" . }}-data
+              mountPath: /pds
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -85,3 +78,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        - name: {{ include "pds.fullname" . }}-data
+          persistentVolumeClaim:
+            claimName: {{ include "pds.fullname" . }}

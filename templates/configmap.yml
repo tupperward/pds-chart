@@ -5,11 +5,13 @@ metadata:
   labels:
     {{- include "pds.labels" . | nindent 4 }}
 data:
+  PDS_ADMIN_EMAIL: {{ .Values.pds.adminEmail }}
   PDS_HOSTNAME: {{ .Values.pds.hostname }}
   {{- if not .Values.pds.postgresUrl }}
   PDS_DB_SQLITE_LOCATION: {{ .Values.pds.sqliteLocation }}
   {{- else }}
   PDS_DB_POSTGRES_URL: {{ .Values.pds.postgresUrl }}
+  PDS_DB_POSTGRES_MIGRATION_URL: {{ .Values.pds.postgresUrl }}
   {{- end }}
   {{- if not .Values.pds.s3 }}
   PDS_BLOBSTORE_DISK_LOCATION: {{ .Values.pds.blobStorePath }}
