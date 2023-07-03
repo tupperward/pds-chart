@@ -10,8 +10,12 @@ $ ./scripts/install-pds.sh
 
 ## Current state
 
-Only tested with minikube. Consists of hard coded values added minimally to get the
-Node app running. The **pds-auth** secret is not part of the chart, it's created
+Tested in:
+- minikube
+- DigitalOcean Kubernetes (DOKS)
+
+Consists of hard coded values added minimally to get the Node app running.
+The **pds-auth** secret is not part of the chart, it's created
 by generating values with:
 
 **secp256k1**:
@@ -43,5 +47,13 @@ All of this is wrapped in the `install-pds.sh` script.
 **BUT IT HAS NOT YET BEEN CONFIRMED OPERATIONAL**
 
 ## TODO:
-- move persistent storage to bucket
-- add example for ingress
+- move persistent storage to bucket (only S3 supported right now AFAIK)
+- add example for terminating TLS with cloud controllers
+
+## Supported cloud ecosystems
+
+TBD
+
+In progress:
+- AWS
+- Digital Ocean
