@@ -23,3 +23,7 @@ $ ./scripts/install-postgres.sh
 
 After doing that, with the current config the pod will run with just a:
 `helm install <release name> chart/`
+
+## TODO:
+- move persistent storage to bucket
+- add example for ingress
