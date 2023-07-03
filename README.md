@@ -2,44 +2,45 @@
 
 Initial Helm chart for deploying a [Personal Data Server](https://github.com/bluesky-social/pds) in Kubernetes.
 
+## Deploy PDS to local dev (tested in minikube)
+
+```
+$ ./scripts/install-pds.sh
+```
+
 ## Current state
 
-Only tested with minikube and consists of hard coded values added minimally to get the
-Node app running. The **pds-auth** secret is not part of the chart.
+Only tested with minikube. Consists of hard coded values added minimally to get the
+Node app running. The **pds-auth** secret is not part of the chart, it's created
+by generating values with:
 
-To generate a **secp256k1** key, run:
+**secp256k1**:
 
 ```
 $ ./scripts/generate-pds-key.sh
 ```
 
-To generate a **hex 16 token**, run:
+**hex 16 token**:
 
 ```
 $ ./scripts/generate-hex16-token.sh
 ```
 
-Then, you can use a key/token/string created by those scripts to create the **pds-auth**
-secret by running:
-
-```
-$ kubectl create secret generic pds-auth --from-literal=pds-admin-pw=<hex 16 value> \
-  --from-literal=pds-jwt-secret=<hex 16 value> \
-  --from-literal=pds-repo-signing-key=<secp256k1 value> \
-  --from-literal=pds-plc-rotation-key=<secp256k1 value>
-```
-
-To install a vanilla postgres with hardcoded `pds:pds` as user/pw, run:
+A vanilla postgres with hardcoded `pds:pds` is deployed with:
 
 ```
 $ ./scripts/install-postgres.sh
 ```
 
-After doing that, the pod will install (but not yet be operational) by running:
+After doing that, the pod is deployed via:
 
 ```
 $ helm install <release name> chart/
 ```
+
+All of this is wrapped in the `install-pds.sh` script.
+
+**BUT IT HAS NOT YET BEEN CONFIRMED OPERATIONAL**
 
 ## TODO:
 - move persistent storage to bucket
