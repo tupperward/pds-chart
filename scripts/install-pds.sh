@@ -1,6 +1,8 @@
 #!/bin/sh
 ##
-## Disclaimer: only tested on MacOS with minikube
+## Disclaimer: only tested on MacOS with:
+## minikube
+## DigitalOcean Kubernetes (DOKS)
 ##
 
 set -e
