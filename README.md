@@ -15,5 +15,11 @@ $ kubectl create secret generic pds-auth --from-literal=pds-admin-pw=<hex 16 val
   --from-literal=pds-plc-rotation-key=<secp256k1 value>
 ```
 
+To install a vanilla postgres with hardcoded `pds:pds` as user/pw, run:
+
+```
+$ ./scripts/install-postgres.sh
+```
+
 After doing that, with the current config the pod will run with just a:
-`helm install <release name> ./`
+`helm install <release name> chart/`

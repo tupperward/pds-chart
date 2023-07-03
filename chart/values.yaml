@@ -63,6 +63,7 @@ pds:
   adminEmail: "ben@bensapp.com"
   hostname: "bsapp-test"
   blobStorePath: "/pds/blocks"
+  postgresUrl: "postgresql://pds:pds@postgresql:5432/pds"
   sqliteLocation: "/pds/pds.sqlite"
   didPlcUrl: "https://plc.bsky-sandbox.dev"
   appViewEndpoint: "https://api.bsky-sandbox.dev"
