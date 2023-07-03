@@ -64,7 +64,9 @@ pds:
   hostname: "bsapp-test"
   blobStorePath: "/pds/blocks"
   postgresUrl: "postgresql://pds:pds@postgresql:5432/pds"
-  sqliteLocation: "/pds/pds.sqlite"
+#  sqlite nullified by postgres being enabled
+#  after blobstore is moved to S3, PVC supporting sqlite will be removed by default
+#   sqliteLocation: "/pds/pds.sqlite"
   didPlcUrl: "https://plc.bsky-sandbox.dev"
   appViewEndpoint: "https://api.bsky-sandbox.dev"
   appViewDid: "did:web:api.bsky-sandbox.dev"
