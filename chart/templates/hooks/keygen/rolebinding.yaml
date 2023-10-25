@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pds.fullname" . }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-1"
+  labels:
+{{ include "pds.labels" . | indent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pds.fullname" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "pds.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end -}}
