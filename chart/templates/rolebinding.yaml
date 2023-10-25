@@ -4,9 +4,8 @@ metadata:
   name: {{ include "pds.fullname" . }}
   annotations:
     helm.sh/hook: pre-install,pre-upgrade
-    helm.sh/hook-weight: "-1"
   labels:
-{{ include "pds.labels" . | indent 4 }}
+    {{ include "pds.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -15,4 +14,3 @@ subjects:
 - kind: ServiceAccount
   name: {{ include "pds.serviceAccountName" . }}
   namespace: {{ .Release.Namespace }}
-{{- end -}}

@@ -1,47 +1,44 @@
 import subprocess
-import base64
 import argparse
 from kubernetes import client, config
 
-def generate_ec_key(secret_name, namespace, secret_data_name):
+def generate_ec_key():
     # Generate the OpenSSL EC key using the openssl command
-    key_generation_command = "openssl ecparam -name secp256k1 -genkey -noout -outform DER | tail -c 38 | head -c 32 | xxd -plain -cols 32"
-    key = subprocess.check_output(key_generation_command, shell=True, text=True).strip()
-    
-    # Encode the key in base64
-    key_base64 = base64.b64encode(key.encode()).decode()
+    key_generation_command = "openssl ecparam -name secp256k1 -genkey -noout -outform DER | tail -c 38 | head -c 32 | xxd -p -c 32"
+    key = subprocess.check_output(key_generation_command, shell=True, text=True)
 
-    return key_base64
+    return key.strip()
 
-def generate_hex_data(secret_name, namespace, secret_data_name):
+def generate_hex_key():
     # Generate random data using the openssl command
     hex_data_generation_command = "openssl rand -hex 16"
     hex_data = subprocess.check_output(hex_data_generation_command, shell=True, text=True)
     
     return hex_data.strip()
 
-def store_in_secret(secret_name, namespace, secret_data_name, data):
+def store_in_secret(secret_name, namespace, secret_data_name, values):
     # Configure the Kubernetes client
     config.load_incluster_config()
     api_instance = client.CoreV1Api()
 
     # Create or update the Secret in Kubernetes
     secret_data = {
-        secret_data_name: data
+        secret_data_name: values
     }
-    secret = client.V1Secret(data=secret_data)
+    metadata = client.V1ObjectMeta(name=secret_name)
+    secret = client.V1Secret(metadata=metadata, data=secret_data)
 
     try:
         existing_secret = api_instance.read_namespaced_secret(secret_name, namespace)
         if secret_data_name in existing_secret.data:
             print(f"Data '{secret_data_name}' in Secret '{secret_name}' already exists. Skipping changes.")
         else:
-            existing_secret.data[secret_data_name] = data
+            existing_secret.data[secret_data_name] = values
             api_instance.patch_namespaced_secret(secret_name, namespace, existing_secret)
             print(f"Data updated in Secret '{secret_name}' in namespace '{namespace}'.")
     except client.rest.ApiException as e:
         if e.status == 404:
-            api_instance.create_namespaced_secret(namespace, secret)
+            api_instance.create_namespaced_secret(namespace=namespace, body=secret)
             print(f"Data stored in new Secret '{secret_name}' in namespace '{namespace}'.")
         else:
             print(f"Error: {e}")
@@ -55,8 +52,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.generate == "ecparam":
-        data = generate_ec_key(args.secret_name, args.namespace, args.secret_data_name)
+        values = generate_ec_key()
     elif args.generate == "hex":
-        data = generate_hex_data(args.secret_name, args.namespace, args.secret_data_name)
+        values = generate_hex_key()
     
-    store_in_secret(args.secret_name, args.namespace, args.secret_data_name, data)
+    store_in_secret(args.secret_name, args.namespace, args.secret_data_name, values)

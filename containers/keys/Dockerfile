@@ -5,10 +5,11 @@ WORKDIR /app
 COPY keygen.py .
 
 # Stage 2: Final minimal image
-FROM alpine:latest
+FROM python:3.8-alpine
 
 # Install OpenSSL
 RUN apk --no-cache add openssl
+RUN pip install kubernetes
 
 # Copy the Python script from the builder stage
 COPY --from=builder /app/keygen.py /app/keygen.py
