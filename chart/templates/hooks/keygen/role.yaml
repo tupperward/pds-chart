@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pds.fullname" . }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-1"
+  labels:
+    {{ include "pds.labels" . | indent 4 }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - "secrets"
+  verbs:
+  - create
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - "secrets"
+  resourceNames:
+  - {{ include "pds.fullname" . }}
+  verbs:
+  - get
+  - update
+{{- end -}}

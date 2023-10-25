@@ -4,6 +4,12 @@
 
 replicaCount: 1
 
+keygen: 
+  image: 
+    repository: "tupperward/pds-keygen"
+    tag: "v1"
+  imagePullPolicy: Always
+
 image:
   repository: ghcr.io/bluesky-social/pds
   pullPolicy: Always
