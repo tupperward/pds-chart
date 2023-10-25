@@ -6,7 +6,7 @@ from kubernetes import client, config
 def generate_ec_key(secret_name, namespace, secret_data_name):
     # Generate the OpenSSL EC key using the openssl command
     key_generation_command = "openssl ecparam -name secp256k1 -genkey -noout -outform DER | tail -c 38 | head -c 32 | xxd -plain -cols 32"
-    key = subprocess.check_output(key_generation_command, shell=True, text=True)
+    key = subprocess.check_output(key_generation_command, shell=True, text=True).strip()
     
     # Encode the key in base64
     key_base64 = base64.b64encode(key.encode()).decode()
@@ -33,13 +33,16 @@ def store_in_secret(secret_name, namespace, secret_data_name, data):
 
     try:
         existing_secret = api_instance.read_namespaced_secret(secret_name, namespace)
-        existing_secret.data[secret_data_name] = data
-        api_instance.patch_namespaced_secret(secret_name, namespace, existing_secret)
-        print(f"Data stored in Secret '{secret_name}' in namespace '{namespace}'")
+        if secret_data_name in existing_secret.data:
+            print(f"Data '{secret_data_name}' in Secret '{secret_name}' already exists. Skipping changes.")
+        else:
+            existing_secret.data[secret_data_name] = data
+            api_instance.patch_namespaced_secret(secret_name, namespace, existing_secret)
+            print(f"Data updated in Secret '{secret_name}' in namespace '{namespace}'.")
     except client.rest.ApiException as e:
         if e.status == 404:
             api_instance.create_namespaced_secret(namespace, secret)
-            print(f"Data stored in new Secret '{secret_name}' in namespace '{namespace}'")
+            print(f"Data stored in new Secret '{secret_name}' in namespace '{namespace}'.")
         else:
             print(f"Error: {e}")
 

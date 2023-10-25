@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "pds.fullname" . }}-keygen
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+spec:
+  ttlSecondsAfterFinished: 10
+  template:
+    spec:
+      containers:
+        - name: generate-pds-admin-pw
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: 
+            {{- toYaml .Values.keygen.image | nindent 12 }}
+          imagePullPolicy: {{ .Values.keygen.imagePullPolicy }}
+          command: ["python", "/app/keygen.py", "--generate", "hex", "--secret-name", "{{ include 'pds.fullname' . }}", "--namespace", "{{ .Release.Namespace }}", "--secret-data-name", "pds-admin-pw" ]
+        - name: generate-pds-jwt-secret
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: 
+            {{- toYaml .Values.keygen.image | nindent 12 }}
+          imagePullPolicy: {{ .Values.keygen.imagePullPolicy }}
+          command: ["python", "/app/keygen.py", "--generate", "hex", "--secret-name", "{{ include 'pds.fullname' . }}", "--namespace", "{{ .Release.Namespace }}", "--secret-data-name", "pds-jwt-secret" ]
+        - name: generate-pds-repo-signing-key
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: 
+            {{- toYaml .Values.keygen.image | nindent 12 }}
+          imagePullPolicy: {{ .Values.keygen.imagePullPolicy }}
+          command: ["python", "/app/keygen.py", "--generate", "ecparam", "--secret-name", "{{ include 'pds.fullname' . }}", "--namespace", "{{ .Release.Namespace }}", "--secret-data-name", "pds-repo-signing-key" ]
+        - name: generate-pds-plc-rotation-key
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: 
+            {{- toYaml .Values.keygen.image | nindent 12 }}
+          imagePullPolicy: {{ .Values.keygen.imagePullPolicy }}
+          command: ["python", "/app/keygen.py", "--generate", "ecparam", "--secret-name", "{{ include 'pds.fullname' . }}", "--namespace", "{{ .Release.Namespace }}", "--secret-data-name", "pds-plc-rotation-key" ]
+      restartPolicy: Never
